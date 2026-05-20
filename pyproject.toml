@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "fastrag"
+version = "0.1.0"
+description = "Minimal RAG pipeline framework — raw documents in, queryable knowledge base out."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "pdfplumber>=0.10",
+    "python-docx>=1.1",
+    "chromadb>=0.5",
+    "sentence-transformers>=3.0",
+    "numpy>=1.26",
+    "typer>=0.12",
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.30",
+    "rich>=13",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.0"]
+pinecone = ["pinecone-client>=3.0"]
+weaviate = ["weaviate-client>=4.0"]
+all = ["fastrag[openai,pinecone,weaviate]"]
+
+[project.scripts]
+fastrag = "fastrag.cli.main:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fastrag*"]
