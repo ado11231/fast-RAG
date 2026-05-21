@@ -31,3 +31,8 @@ class BaseStore(ABC):
     def clear(self) -> None:
         """Delete every vector in the store."""
         ...
+
+    @abstractmethod
+    def count(self) -> int:
+        """Return the number of vectors currently in the store."""
+        ...
