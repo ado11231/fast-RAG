@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import uuid
 from pathlib import Path
 
 import numpy as np
@@ -68,6 +67,9 @@ class ChromaStore(BaseStore):
         if ids:
             self._collection.delete(ids=ids)
             logger.debug("Deleted %d vectors for source '%s'", len(ids), source)
+
+    def count(self) -> int:
+        return self._collection.count()
 
     def clear(self) -> None:
         name = self._collection.name
