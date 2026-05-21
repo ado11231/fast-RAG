@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import hashlib
 import logging
-import uuid
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from fastrag.chunkers.base import BaseChunker
 from fastrag.chunkers.recursive import RecursiveChunker
@@ -13,6 +13,9 @@ from fastrag.embedders.sentence_transformers import SentenceTransformerEmbedder
 from fastrag.loaders import get_loader
 from fastrag.stores.base import BaseStore
 from fastrag.stores.chroma import ChromaStore
+
+if TYPE_CHECKING:
+    from fastrag.ledger import Ledger
 
 logger = logging.getLogger(__name__)
 
@@ -42,21 +45,38 @@ class Pipeline:
     # Ingestion
     # ------------------------------------------------------------------
 
-    def ingest(self, path: str | Path) -> int:
+    def ingest(self, path: str | Path, ledger: Ledger | None = None) -> int:
         """
         Ingest a file or every supported file under a directory.
 
-        Returns the number of chunks stored.
+        When a *ledger* is provided, unchanged files are skipped and vectors for
+        deleted files are removed (delta sync).  Returns the number of chunks stored.
         """
         target = Path(path)
-        if target.is_dir():
-            files = [f for f in target.rglob("*") if f.is_file()]
-        else:
-            files = [target]
+        files = list(target.rglob("*")) if target.is_dir() else [target]
+        files = [f for f in files if f.is_file()]
+
+        current_sources = {str(f) for f in files}
+
+        if ledger:
+            for source in ledger.all_sources():
+                if source not in current_sources:
+                    self.store.delete_by_source(source)
+                    ledger.remove(Path(source))
+                    logger.info("Removed deleted source: %s", source)
 
         total = 0
         for file in files:
-            total += self._ingest_file(file)
+            if ledger and not ledger.is_changed(file):
+                logger.debug("Skipping unchanged: %s", file)
+                continue
+            if ledger and str(file) in ledger.all_sources():
+                self.store.delete_by_source(str(file))
+            count = self._ingest_file(file)
+            total += count
+            if ledger and count > 0:
+                ledger.update(file)
+
         return total
 
     def _ingest_file(self, path: Path) -> int:
