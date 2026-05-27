@@ -1,4 +1,9 @@
-"""fastrag query command."""
+"""fastrag query command.
+
+Asks a natural-language question against the current knowledge base
+and prints the top results with similarity scores and source metadata.
+Useful for testing ingestion before building an app around the store.
+"""
 import typer
 from rich.console import Console
 from rich.panel import Panel

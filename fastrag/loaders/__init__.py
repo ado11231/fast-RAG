@@ -1,3 +1,9 @@
+"""Loader package — file-type detection and dispatch.
+
+The ``EXTENSION_MAP`` maps file suffixes to their corresponding
+loader classes so the Pipeline can auto-detect the right loader
+for any file without user input.
+"""
 from fastrag.loaders.base import BaseLoader
 from fastrag.loaders.docx import DocxLoader
 from fastrag.loaders.md import MarkdownLoader

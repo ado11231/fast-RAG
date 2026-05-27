@@ -1,8 +1,11 @@
+"""Plain-text loader — reads UTF-8 text files as-is."""
 from pathlib import Path
 
 from fastrag.loaders.base import BaseLoader
+from fastrag.registry import register_loader
 
 
+@register_loader("txt")
 class TxtLoader(BaseLoader):
     """Reads plain-text files as-is."""
 

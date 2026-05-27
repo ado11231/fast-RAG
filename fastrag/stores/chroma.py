@@ -1,3 +1,9 @@
+"""ChromaDB store — local, zero-config, persisted to disk.
+
+The default vector store for fastrag.  Uses cosine distance
+(HNSW index) and persists everything under ``.fastrag/chroma/``.
+No external services or accounts required.
+"""
 from __future__ import annotations
 
 import logging
@@ -5,6 +11,7 @@ from pathlib import Path
 
 import numpy as np
 
+from fastrag.registry import register_store
 from fastrag.stores.base import BaseStore
 
 logger = logging.getLogger(__name__)
@@ -13,6 +20,7 @@ _DEFAULT_PERSIST_DIR = ".fastrag/chroma"
 _DEFAULT_COLLECTION = "fastrag"
 
 
+@register_store("chroma")
 class ChromaStore(BaseStore):
     """Vector store backed by ChromaDB, persisted to disk."""
 
@@ -25,7 +33,6 @@ class ChromaStore(BaseStore):
             import chromadb
         except ImportError:
             raise ImportError("chromadb is not installed. Run: pip install chromadb")
-
         self._client = chromadb.PersistentClient(path=str(persist_dir))
         self._collection = self._client.get_or_create_collection(
             name=collection_name,

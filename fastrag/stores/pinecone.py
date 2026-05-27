@@ -1,3 +1,9 @@
+"""Pinecone store adapter — serverless vector database.
+
+Requires the ``pinecone-client`` package (``pip install fastrag[pinecone]``).
+The API key is read from ``PINECONE_API_KEY`` by default.
+Creates the index automatically if it does not exist.
+"""
 from __future__ import annotations
 
 import logging
@@ -37,14 +43,12 @@ class PineconeStore(BaseStore):
             raise ImportError(
                 "pinecone-client is not installed. Run: pip install pinecone-client"
             )
-
         self._api_key = api_key or os.environ.get("PINECONE_API_KEY")
         if not self._api_key:
             raise ValueError(
                 "Pinecone API key is required. Set the PINECONE_API_KEY "
                 "environment variable or pass api_key to the constructor."
             )
-
         init_kwargs = {"api_key": self._api_key}
         if environment is not None:
             init_kwargs["environment"] = environment
@@ -61,9 +65,7 @@ class PineconeStore(BaseStore):
 
         self._index = pinecone.Index(index_name)
         self._index_name = index_name
-        logger.debug(
-            "PineconeStore ready — index='%s', dimension=%d", index_name, dimension
-        )
+        logger.debug("PineconeStore ready — index='%s', dimension=%d", index_name, dimension)
 
     def add(
         self,

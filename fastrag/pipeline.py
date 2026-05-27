@@ -1,4 +1,9 @@
-"""Pipeline — the main entry point that wires Loader, Chunker, Embedder, and Store together."""
+"""Pipeline — the main entry point.
+
+Wires a Loader, Chunker, Embedder, and Store together into a single
+ingest-and-query workflow.  The user never has to touch the individual
+components unless they want custom behaviour.
+"""
 from __future__ import annotations
 
 import hashlib
@@ -21,8 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 class Pipeline:
-    """
-    Orchestrates ingestion and querying.
+    """Orchestrates ingestion and querying.
 
     Usage::
 
@@ -37,6 +41,8 @@ class Pipeline:
         embedder: BaseEmbedder | None = None,
         store: BaseStore | None = None,
     ) -> None:
+        """Use defaults (RecursiveChunker, SentenceTransformer, ChromaStore) when
+        nothing is provided — zero-config for the common case."""
         self.chunker = chunker or RecursiveChunker()
         self.embedder = embedder or SentenceTransformerEmbedder()
         self.store = store or ChromaStore()
@@ -46,16 +52,15 @@ class Pipeline:
     # ------------------------------------------------------------------
 
     def ingest(self, path: str | Path, ledger: Ledger | None = None) -> int:
-        """
-        Ingest a file or every supported file under a directory.
+        """Ingest a file or every supported file under a directory.
 
-        When a *ledger* is provided, unchanged files are skipped and vectors for
-        deleted files are removed (delta sync).  Returns the number of chunks stored.
+        When a *ledger* is provided, unchanged files are skipped and
+        vectors for deleted files are removed (delta sync).
+        Returns the number of chunks stored.
         """
         target = Path(path)
         files = list(target.rglob("*")) if target.is_dir() else [target]
         files = [f for f in files if f.is_file()]
-
         current_sources = {str(f) for f in files}
 
         if ledger:
@@ -76,10 +81,10 @@ class Pipeline:
             total += count
             if ledger and count > 0:
                 ledger.update(file)
-
         return total
 
     def _ingest_file(self, path: Path) -> int:
+        """Run one file through the full pipeline: load → chunk → embed → store."""
         suffix = path.suffix.lower()
         try:
             loader = get_loader(suffix)
@@ -99,7 +104,10 @@ class Pipeline:
 
         vectors = self.embedder.embed(chunks)
         source = str(path)
-        ids = [f"{hashlib.md5(source.encode()).hexdigest()}-{i}" for i in range(len(chunks))]
+        ids = [
+            f"{hashlib.md5(source.encode()).hexdigest()}-{i}"
+            for i in range(len(chunks))
+        ]
         metadatas = [{"source": source} for _ in chunks]
 
         self.store.add(ids=ids, vectors=vectors, texts=chunks, metadatas=metadatas)
@@ -111,8 +119,7 @@ class Pipeline:
     # ------------------------------------------------------------------
 
     def query(self, question: str, top_k: int = 5) -> list[dict]:
-        """
-        Search the store for chunks most relevant to *question*.
+        """Search the store for chunks most relevant to *question*.
 
         Returns a list of dicts with 'text', 'metadata', and 'score'.
         """

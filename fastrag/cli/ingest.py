@@ -1,4 +1,9 @@
-"""fastrag ingest command."""
+"""fastrag ingest command.
+
+Scans a file or directory, runs every supported file through the full
+Pipeline (load → chunk → embed → store), and updates the delta-sync
+ledger so unchanged files are skipped on subsequent runs.
+"""
 import logging
 from pathlib import Path
 

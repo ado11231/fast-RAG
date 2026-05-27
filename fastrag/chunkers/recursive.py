@@ -1,6 +1,14 @@
+"""Recursive character chunker — splits text on descending separator priority.
+
+Tries paragraph breaks first, then newlines, then sentence endings,
+then spaces, and finally falls back to fixed-length character splits.
+This produces natural-feeling chunks that rarely cut a sentence in half.
+"""
 from fastrag.chunkers.base import BaseChunker
+from fastrag.registry import register_chunker
 
 
+@register_chunker("recursive")
 class RecursiveChunker(BaseChunker):
     """Splits text recursively on paragraph, newline, then sentence boundaries."""
 
@@ -13,6 +21,7 @@ class RecursiveChunker(BaseChunker):
         return self._split(text, self._separators)
 
     def _split(self, text: str, separators: list[str]) -> list[str]:
+        """Recursively split *text* using the ordered list of *separators*."""
         if len(text) <= self.chunk_size:
             stripped = text.strip()
             return [stripped] if stripped else []
@@ -21,7 +30,6 @@ class RecursiveChunker(BaseChunker):
         next_seps = separators[1:]
 
         if sep == "":
-            # Character-level fallback
             return self._fixed_split(text)
 
         parts = text.split(sep)
@@ -34,17 +42,26 @@ class RecursiveChunker(BaseChunker):
                 current = candidate
             else:
                 if current:
-                    sub = self._split(current, next_seps) if len(current) > self.chunk_size else [current.strip()]
+                    sub = (
+                        self._split(current, next_seps)
+                        if len(current) > self.chunk_size
+                        else [current.strip()]
+                    )
                     chunks.extend(sub)
                 current = part
 
         if current.strip():
-            sub = self._split(current, next_seps) if len(current) > self.chunk_size else [current.strip()]
+            sub = (
+                self._split(current, next_seps)
+                if len(current) > self.chunk_size
+                else [current.strip()]
+            )
             chunks.extend(sub)
 
         return self._apply_overlap(chunks)
 
     def _fixed_split(self, text: str) -> list[str]:
+        """Fallback: split by exact character count with overlap."""
         chunks = []
         start = 0
         while start < len(text):
@@ -54,6 +71,7 @@ class RecursiveChunker(BaseChunker):
         return [c for c in chunks if c]
 
     def _apply_overlap(self, chunks: list[str]) -> list[str]:
+        """Add trailing tokens from the previous chunk to the next one."""
         if self.overlap <= 0 or len(chunks) <= 1:
             return chunks
         result = [chunks[0]]

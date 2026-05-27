@@ -1,3 +1,9 @@
+"""OpenAI embedder adapter — wraps the OpenAI Embeddings API.
+
+Requires the ``openai`` package (``pip install fastrag[openai]``).
+The API key is read from ``OPENAI_API_KEY`` by default, or passed
+directly to the constructor.
+"""
 from __future__ import annotations
 
 import logging
@@ -33,7 +39,6 @@ class OpenAIEmbedder(BaseEmbedder):
             raise ImportError(
                 "openai is not installed. Run: pip install openai"
             )
-
         self._model = model
         self._api_key = api_key or os.environ.get("OPENAI_API_KEY")
         if not self._api_key:
@@ -53,7 +58,6 @@ class OpenAIEmbedder(BaseEmbedder):
         kwargs = {"model": self._model, "input": texts}
         if self._dimensions is not None:
             kwargs["dimensions"] = self._dimensions
-
         response = self._client.embeddings.create(**kwargs)
         vectors = [item.embedding for item in response.data]
         return np.array(vectors, dtype=np.float32)

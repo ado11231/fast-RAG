@@ -1,4 +1,12 @@
-"""fastrag CLI entry point."""
+"""fastrag CLI entry point — typer app that registers all subcommands.
+
+Commands:
+  ingest   — ingest documents into the vector store
+  query    — ask a question against the knowledge base
+  serve    — spin up a FastAPI server on the active store
+  status   — show ledger and store contents
+  clear    — wipe everything and start fresh
+"""
 import typer
 
 from fastrag.cli.clear import clear

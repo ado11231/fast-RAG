@@ -1,0 +1,4 @@
+fastrag is a focused, minimal RAG pipeline framework.
+One job: take raw documents, handle all ingestion, chunking,
+embedding, and vectorization, and return a deployable queryable
+knowledge base the user can drop into any app.

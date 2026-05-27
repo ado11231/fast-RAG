@@ -33,6 +33,26 @@ That's it. `Pipeline` handles loading, chunking, embedding, and storing automati
 
 ---
 
+## Examples
+
+Ready-to-run examples in the [`examples/`](./examples) directory:
+
+| # | Example | What it shows |
+|---|---|---|
+| 01 | [`basic-ingest-query`](./examples/01-basic-ingest-query) | Simplest possible ingest + query |
+| 02 | [`custom-loader`](./examples/02-custom-loader) | Building a custom CSV loader |
+| 03 | [`custom-pipeline`](./examples/03-custom-pipeline) | Configuring every component explicitly |
+| 04 | [`api-integration`](./examples/04-api-integration) | Embedding fastrag in a FastAPI app |
+
+---
+
+## Full Documentation
+
+Read the [full docs site](https://anomalyco.github.io/fastrag) for architecture, CLI reference,
+plugin development guide, and contributing information.
+
+---
+
 ## Supported File Types
 
 | Format | Extension |

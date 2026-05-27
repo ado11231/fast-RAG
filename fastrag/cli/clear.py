@@ -1,4 +1,9 @@
-"""fastrag clear command."""
+"""fastrag clear command.
+
+Wipes the vector store and delta-sync ledger.
+Useful when switching embedding models (different dimensions require
+a fresh index) or resetting a project entirely.
+"""
 import typer
 from rich.console import Console
 

@@ -1,3 +1,9 @@
+"""Abstract base class for all chunkers.
+
+Every chunker must implement ``chunk()`` to split a long string into
+smaller pieces.  The Pipeline calls this after loading and before
+embedding.
+"""
 from abc import ABC, abstractmethod
 
 

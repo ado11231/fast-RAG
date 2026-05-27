@@ -1,3 +1,9 @@
+"""Abstract base class for all vector stores.
+
+Every store must implement five methods covering upsert, similarity
+search, source-tracked deletion, full clear, and counting.
+The Pipeline depends on every one of these.
+"""
 from abc import ABC, abstractmethod
 
 import numpy as np

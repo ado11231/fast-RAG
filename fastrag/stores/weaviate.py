@@ -1,3 +1,9 @@
+"""Weaviate store adapter — open-source vector database.
+
+Requires the ``weaviate-client`` package (``pip install fastrag[weaviate]``).
+Connects to a local or remote Weaviate instance and auto-creates
+the collection schema if it does not exist.
+"""
 from __future__ import annotations
 
 import logging
@@ -35,7 +41,6 @@ class WeaviateStore(BaseStore):
             raise ImportError(
                 "weaviate-client is not installed. Run: pip install weaviate-client"
             )
-
         self._class_name = class_name
         auth = None
         key = api_key or os.environ.get("WEAVIATE_API_KEY")
@@ -57,11 +62,11 @@ class WeaviateStore(BaseStore):
             grpc_secure=secure,
             auth_credentials=auth,
         )
-
         self._ensure_class()
         logger.debug("WeaviateStore ready — class='%s' at '%s'", class_name, url)
 
     def _ensure_class(self) -> None:
+        """Create the Weaviate collection if it does not already exist."""
         if self._client.collections.exists(self._class_name):
             self._collection = self._client.collections.get(self._class_name)
         else:

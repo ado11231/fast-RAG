@@ -1,0 +1,4 @@
+fastrag provides a minimal RAG pipeline framework.
+It features delta sync, plugin registry, and zero-to-API CLI.
+The architecture uses adapters for loaders, chunkers, embedders, and stores.
+Switching providers never requires rewriting application logic.

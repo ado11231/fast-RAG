@@ -1,0 +1,17 @@
+Welcome to fastrag.
+
+fastrag is a minimal RAG pipeline framework. It takes raw documents,
+handles ingestion, chunking, embedding, and vectorization, and returns
+a deployable queryable knowledge base.
+
+Key features include delta sync, a decorator plugin registry, and a
+zero-to-API CLI command. The default embedder is sentence-transformers,
+the default vector store is ChromaDB.
+
+The project philosophy is simplicity over flexibility, lean dependencies,
+and adapters everywhere. Every major component is swappable via a
+one-line change.
+
+fastrag does not handle multi-turn conversation memory, AI agents,
+LLM chaining, or frontend UI components. It focuses strictly on the
+data-in, queryable-knowledge-out loop.

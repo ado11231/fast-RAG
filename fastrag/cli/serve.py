@@ -1,4 +1,13 @@
-"""fastrag serve command."""
+"""fastrag serve command.
+
+Wraps the existing Pipeline in a FastAPI server with three endpoints:
+
+  GET  /health  — server health and store info
+  GET  /query   — search the knowledge base (query param ``q``)
+  GET  /docs    — interactive Swagger documentation
+
+No server code required from the user — just ``fastrag serve``.
+"""
 import typer
 from rich.console import Console
 

@@ -1,3 +1,9 @@
+"""Sentence-transformers embedder — free, local, no API key required.
+
+Uses the ``sentence-transformers`` library to produce embeddings
+entirely on-device.  The default model is ``all-MiniLM-L6-v2``
+(384 dimensions), which balances speed and quality.
+"""
 from __future__ import annotations
 
 import logging
@@ -5,12 +11,14 @@ import logging
 import numpy as np
 
 from fastrag.embedders.base import BaseEmbedder
+from fastrag.registry import register_embedder
 
 logger = logging.getLogger(__name__)
 
 _DEFAULT_MODEL = "all-MiniLM-L6-v2"
 
 
+@register_embedder("sentence-transformers")
 class SentenceTransformerEmbedder(BaseEmbedder):
     """Local embedder backed by sentence-transformers (no API key required)."""
 

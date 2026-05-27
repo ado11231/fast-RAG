@@ -1,4 +1,9 @@
-"""fastrag status command."""
+"""fastrag status command.
+
+Displays the current ingestion ledger and vector store statistics
+so the user can see what has been ingested without digging into
+``.fastrag/`` directly.
+"""
 import typer
 from rich.console import Console
 from rich.table import Table
